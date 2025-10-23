@@ -12,5 +12,9 @@ public class RoleDto {
 	private Long roleId;
 	
 	private String name;
+	
+	public String getRole() {
+		return this.name.toString();
+	}
 
 }
