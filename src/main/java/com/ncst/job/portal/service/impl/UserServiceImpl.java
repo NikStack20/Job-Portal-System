@@ -1,5 +1,5 @@
 package com.ncst.job.portal.service.impl;
-import java.util.*; 
+import java.util.*;
 import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;

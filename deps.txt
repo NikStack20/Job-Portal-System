@@ -1,0 +1,98 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ----------------< com.nikStack.projectVibes:JobPortal >-----------------
+[INFO] Building JobPortal 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- dependency:3.8.1:tree (default-cli) @ JobPortal ---
+[INFO] com.nikStack.projectVibes:JobPortal:jar:0.0.1-SNAPSHOT
+[INFO] +- org.springframework.boot:spring-boot-starter-data-jpa:jar:3.5.6:compile
+[INFO] |  +- org.springframework.boot:spring-boot-starter:jar:3.5.6:compile (version managed from 3.5.6; scope not updated to compile)
+[INFO] |  |  \- (org.springframework:spring-core:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] |  +- org.springframework.boot:spring-boot-starter-jdbc:jar:3.5.6:compile (version managed from 3.5.6)
+[INFO] |  |  \- org.springframework:spring-jdbc:jar:6.2.11:compile (version managed from 6.2.11)
+[INFO] |  |     +- (org.springframework:spring-beans:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] |  |     +- (org.springframework:spring-core:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] |  |     \- (org.springframework:spring-tx:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] |  +- org.springframework.data:spring-data-jpa:jar:3.5.4:compile (version managed from 3.5.4)
+[INFO] |  |  +- org.springframework.data:spring-data-commons:jar:3.5.4:compile (version managed from 3.5.4)
+[INFO] |  |  |  +- (org.springframework:spring-core:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] |  |  |  \- (org.springframework:spring-beans:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] |  |  +- org.springframework:spring-orm:jar:6.2.11:compile (version managed from 6.2.11)
+[INFO] |  |  |  +- (org.springframework:spring-beans:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] |  |  |  +- (org.springframework:spring-core:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] |  |  |  +- (org.springframework:spring-jdbc:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] |  |  |  \- (org.springframework:spring-tx:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] |  |  +- org.springframework:spring-context:jar:6.2.11:compile (version managed from 6.2.11)
+[INFO] |  |  |  +- (org.springframework:spring-aop:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] |  |  |  +- (org.springframework:spring-beans:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] |  |  |  +- (org.springframework:spring-core:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] |  |  |  \- (org.springframework:spring-expression:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] |  |  +- (org.springframework:spring-aop:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] |  |  +- org.springframework:spring-tx:jar:6.2.11:compile (version managed from 6.2.11)
+[INFO] |  |  |  +- (org.springframework:spring-beans:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] |  |  |  \- (org.springframework:spring-core:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] |  |  +- org.springframework:spring-beans:jar:6.2.11:compile (version managed from 6.2.11)
+[INFO] |  |  |  \- (org.springframework:spring-core:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] |  |  \- (org.springframework:spring-core:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] |  \- org.springframework:spring-aspects:jar:6.2.11:compile (version managed from 6.2.11)
+[INFO] +- org.springdoc:springdoc-openapi-starter-webmvc-ui:jar:2.1.0:compile
+[INFO] |  \- org.springdoc:springdoc-openapi-starter-webmvc-api:jar:2.1.0:compile
+[INFO] |     \- (org.springframework:spring-webmvc:jar:6.2.11:compile - version managed from 6.0.7; omitted for duplicate)
+[INFO] +- org.springframework.boot:spring-boot-starter-security:jar:3.5.6:compile
+[INFO] |  +- org.springframework:spring-aop:jar:6.2.11:compile (version managed from 6.2.11)
+[INFO] |  |  +- (org.springframework:spring-beans:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] |  |  \- (org.springframework:spring-core:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] |  +- org.springframework.security:spring-security-config:jar:6.5.5:compile (version managed from 6.5.5)
+[INFO] |  |  +- (org.springframework:spring-aop:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] |  |  +- (org.springframework:spring-beans:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] |  |  +- (org.springframework:spring-context:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] |  |  \- (org.springframework:spring-core:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] |  \- org.springframework.security:spring-security-web:jar:6.5.5:compile (version managed from 6.5.5; scope not updated to compile)
+[INFO] |     +- (org.springframework:spring-core:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] |     +- (org.springframework:spring-aop:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] |     +- (org.springframework:spring-beans:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] |     +- (org.springframework:spring-context:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] |     +- org.springframework:spring-expression:jar:6.2.11:compile (version managed from 6.2.11)
+[INFO] |     |  \- (org.springframework:spring-core:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] |     \- (org.springframework:spring-web:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] +- org.springframework.boot:spring-boot-starter-web:jar:3.5.6:compile
+[INFO] |  +- org.springframework.boot:spring-boot-starter-json:jar:3.5.6:compile (version managed from 3.5.6)
+[INFO] |  |  \- (org.springframework:spring-web:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] |  +- org.springframework:spring-web:jar:6.2.11:compile (version managed from 6.2.11)
+[INFO] |  |  +- (org.springframework:spring-beans:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] |  |  \- (org.springframework:spring-core:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] |  \- org.springframework:spring-webmvc:jar:6.2.11:compile (version managed from 6.2.11)
+[INFO] |     +- (org.springframework:spring-aop:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] |     +- (org.springframework:spring-beans:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] |     +- (org.springframework:spring-context:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] |     +- (org.springframework:spring-core:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] |     +- (org.springframework:spring-expression:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] |     \- (org.springframework:spring-web:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] +- org.springframework.boot:spring-boot-devtools:jar:3.5.6:runtime
+[INFO] |  \- org.springframework.boot:spring-boot:jar:3.5.6:compile (version managed from 3.5.6; scope not updated to compile)
+[INFO] |     +- (org.springframework:spring-core:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] |     \- (org.springframework:spring-context:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO] +- org.springframework.boot:spring-boot-starter-test:jar:3.5.6:test
+[INFO] |  +- org.springframework.boot:spring-boot-test:jar:3.5.6:test (version managed from 3.5.6)
+[INFO] |  |  \- (org.springframework:spring-test:jar:6.2.11:test - version managed from 6.2.11; omitted for duplicate)
+[INFO] |  +- org.springframework:spring-core:jar:6.2.11:compile (version managed from 6.2.11; scope not updated to compile)
+[INFO] |  |  \- org.springframework:spring-jcl:jar:6.2.11:compile (version managed from 6.2.11)
+[INFO] |  \- org.springframework:spring-test:jar:6.2.11:test (version managed from 6.2.11)
+[INFO] |     \- (org.springframework:spring-core:jar:6.2.11:test - version managed from 6.2.11; omitted for duplicate)
+[INFO] \- org.springframework.security:spring-security-test:jar:6.5.5:test
+[INFO]    +- org.springframework.security:spring-security-core:jar:6.5.5:compile (version managed from 6.5.5; scope not updated to compile)
+[INFO]    |  +- (org.springframework:spring-aop:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO]    |  +- (org.springframework:spring-beans:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO]    |  +- (org.springframework:spring-context:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO]    |  +- (org.springframework:spring-core:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO]    |  \- (org.springframework:spring-expression:jar:6.2.11:compile - version managed from 6.2.11; omitted for duplicate)
+[INFO]    +- (org.springframework:spring-core:jar:6.2.11:test - version managed from 6.2.11; omitted for duplicate)
+[INFO]    \- (org.springframework:spring-test:jar:6.2.11:test - version managed from 6.2.11; omitted for duplicate)
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  3.651 s
+[INFO] Finished at: 2025-10-25T12:26:24+05:30
+[INFO] ------------------------------------------------------------------------

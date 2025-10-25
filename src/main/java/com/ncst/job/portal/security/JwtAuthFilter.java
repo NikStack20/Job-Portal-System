@@ -1,35 +1,23 @@
 package com.ncst.job.portal.security;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
+import org.springframework.web.filter.OncePerRequestFilter;
+import com.ncst.job.portal.service.CustomUserDetailsService; // update to your actual package/name
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.lang.NonNull;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.stereotype.Component;
-import org.springframework.util.AntPathMatcher;
-import org.springframework.web.filter.OncePerRequestFilter;
-
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthFilter.class);
 
-    // Patterns we want to skip filtering for (swagger, api-docs, auth endpoints, webjars, etc)
     private final List<String> skipPaths = Arrays.asList(
             "/v3/api-docs",
             "/v3/api-docs/**",
@@ -44,27 +32,25 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
-    @Autowired
-    private CustomUserDetailsService userDetailsService; // or UserDetailsService
+    private final CustomUserDetailsService userDetailsService;
+    private final JwtTokenHelper jwtTokenHelper;
 
-    @Autowired
-    private JwtTokenHelper jwtTokenHelper; // your helper to parse/validate tokens
+    public JwtAuthFilter(CustomUserDetailsService userDetailsService,
+                         JwtTokenHelper jwtTokenHelper) {
+        this.userDetailsService = userDetailsService;
+        this.jwtTokenHelper = jwtTokenHelper;
+    }
 
     @Override
-    protected boolean shouldNotFilter(@NonNull HttpServletRequest request) throws ServletException {
-        // Always skip preflight
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        // Use request.getRequestURI() since swagger UI may use servlet path + query etc.
+        String path = request.getRequestURI(); 
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             return true;
         }
-
-        // Build the request path to test against patterns (handles servlet context if any)
-        String servletPath = request.getServletPath(); // e.g. "/v3/api-docs"
-        String pathInfo = request.getPathInfo(); // maybe null
-        String fullPath = (pathInfo != null) ? servletPath + pathInfo : servletPath;
-
         for (String pattern : skipPaths) {
-            if (pathMatcher.match(pattern, fullPath)) {
-                logger.debug("Skipping JWT filter for path: {} (pattern matched: {})", fullPath, pattern);
+            if (pathMatcher.match(pattern, path)) {
+                logger.debug("shouldNotFilter MATCH: pattern='{}' path='{}' -> skipping filter", pattern, path);
                 return true;
             }
         }
@@ -72,48 +58,39 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request,
-                                    @NonNull HttpServletResponse response,
-                                    @NonNull FilterChain filterChain)
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain)
             throws ServletException, IOException {
 
-        final String authHeader = request.getHeader("Authorization");
-        String token = null;
-        String username = null;
+        logger.debug("JWT Filter running for path='{}' method='{}' authHeaderPresent={}",
+                request.getRequestURI(), request.getMethod(),
+                request.getHeader("Authorization") != null);
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            token = authHeader.substring(7);
-            try {
-                username = jwtTokenHelper.getUsername(token);
-            } catch (IllegalArgumentException ex) {
-                logger.warn("Unable to get JWT token: {}", ex.getMessage());
-            } catch (ExpiredJwtException ex) {
-                logger.info("JWT token expired: {}", ex.getMessage());
-            } catch (MalformedJwtException ex) {
-                logger.warn("Malformed JWT token: {}", ex.getMessage());
-            } catch (Exception ex) {
-                logger.error("Error while parsing JWT token", ex);
-            }
-        } else {
-            logger.debug("No Bearer token found in request: {} {}", request.getMethod(), request.getRequestURI());
-        }
-
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            try {
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
-                if (jwtTokenHelper.validate(token, userDetails)) {
-                    UsernamePasswordAuthenticationToken authToken =
-                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
-                    logger.debug("JWT authentication successful for user: {}", username);
-                } else {
-                    logger.warn("JWT token validation failed for user: {}", username);
+        // Safe token processing: catch parsing exceptions and do NOT send error responses here
+        try {
+            String authHeader = request.getHeader("Authorization");
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                String token = authHeader.substring(7);
+                String username = jwtTokenHelper.getUsername(token);
+                if (username != null && org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication() == null) {
+                    var userDetails = (org.springframework.security.core.userdetails.UserDetails) userDetailsService.loadUserByUsername(username);
+                    if (jwtTokenHelper.validate(token, userDetails)) {
+                        var auth = new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
+                                userDetails, null, userDetails.getAuthorities());
+                        auth.setDetails(new org.springframework.security.web.authentication.WebAuthenticationDetailsSource().buildDetails(request));
+                        org.springframework.security.core.context.SecurityContextHolder.getContext().setAuthentication(auth);
+                        logger.debug("JWT Filter: authenticated user='{}'", username);
+                    } else {
+                        logger.debug("JWT Filter: token validation failed for user='{}'", username);
+                    }
                 }
-            } catch (Exception ex) {
-                logger.error("Failed to set user authentication in security context", ex);
+            } else {
+                logger.debug("JWT Filter: no bearer token");
             }
+        } catch (Exception ex) {
+            // Log and continue — do not call response.sendError(...) here
+            logger.warn("JWT parse/validate exception (continuing unauthenticated): {}", ex.toString());
         }
 
         filterChain.doFilter(request, response);
