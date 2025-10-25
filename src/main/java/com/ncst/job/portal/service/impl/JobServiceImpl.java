@@ -12,9 +12,9 @@ import com.ncst.job.portal.entities.Job;
 import com.ncst.job.portal.entities.User;
 import com.ncst.job.portal.globalExceptionHandler.ResourceNotFoundException;
 import com.ncst.job.portal.loadouts.JobDto;
-import com.ncst.job.portal.Repository.ApplicationRepo;
-import com.ncst.job.portal.Repository.JobRepo;
-import com.ncst.job.portal.Repository.UserRepo;
+import com.ncst.job.portal.repository.ApplicationRepo;
+import com.ncst.job.portal.repository.JobRepo;
+import com.ncst.job.portal.repository.UserRepo;
 import com.ncst.job.portal.service.JobService;
 
 @Service

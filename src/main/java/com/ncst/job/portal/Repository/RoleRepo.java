@@ -1,4 +1,4 @@
-package com.ncst.job.portal.Repository;
+package com.ncst.job.portal.repository;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;

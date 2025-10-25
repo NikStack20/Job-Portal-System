@@ -1,5 +1,5 @@
 package com.ncst.job.portal.security;
-import java.util.List;
+import java.util.List; 
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -8,8 +8,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import com.ncst.job.portal.Repository.UserRepo;
+
 import com.ncst.job.portal.entities.User;
+import com.ncst.job.portal.repository.UserRepo;
 
 
 @Service

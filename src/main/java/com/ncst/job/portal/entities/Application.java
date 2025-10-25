@@ -21,8 +21,8 @@ public class Application {
 	@Id
 	private String id;
 	
-	@JoinColumn(name="job_id")
 	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name="job_id")
 	private Job job;
 	
 	@ManyToOne(fetch = FetchType.EAGER)

@@ -45,8 +45,6 @@ public class User implements UserDetails {
 	@Column(name="user_passwords", nullable = false)
 	private String password;
 	
-    private Role role;
-	
 	
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "user_roles",

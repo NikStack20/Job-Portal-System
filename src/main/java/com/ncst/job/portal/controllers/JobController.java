@@ -35,12 +35,12 @@ public class JobController {
     // Create using authenticated user (recommended)
     @PostMapping
     @PreAuthorize("hasAnyAuthority('ROLE_EMPLOYER','ROLE_ADMIN')")
-    public ResponseEntity<JobDto> createJob(Principal principal, @Valid @RequestBody JobDto jobDto) {
-        String email = principal.getName();
-        User current = userService.getUserByEmail(email);
+    public ResponseEntity<JobDto> createJob(@Valid @RequestBody JobDto jobDto, Principal principal) {
+        User current = userService.getUserByEmail(principal.getName());
         JobDto created = jobService.createJob(jobDto, current.getId());
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
+
 
     // (Optional) create by userId (testing)
     @PostMapping("/user/{userId}")
@@ -55,19 +55,23 @@ public class JobController {
 
     @PutMapping("/{jobId}")
     @PreAuthorize("hasAnyAuthority('ROLE_EMPLOYER','ROLE_ADMIN')")
-    public ResponseEntity<JobDto> updateJob(@PathVariable String jobId,
-                                            @Valid @RequestBody JobDto jobDto,
+    public ResponseEntity<JobDto> updateJob(@Valid @RequestBody JobDto jobDto,
+                                            @PathVariable String jobId,
                                             Principal principal) {
-
-        // ownership check
         User current = userService.getUserByEmail(principal.getName());
-        if (!isOwnerOrAdmin(current, jobId)) {
-            throw new AccessDeniedException("You are not allowed to update this job");
-        }
+        JobDto job = jobService.getJobById(jobId);
+
+        boolean isAdmin = current.getRoles().stream()
+                .anyMatch(r -> r.getName().toString().equalsIgnoreCase("ROLE_ADMIN"));
+        boolean isOwner = job.getPostedBy().getId().equals(current.getId());
+
+        if (!isAdmin && !isOwner)
+            throw new AccessDeniedException("Not allowed to update this job");
 
         JobDto updated = jobService.updateJob(jobDto, jobId);
         return ResponseEntity.ok(updated);
     }
+
 
     // ---------------- Delete ----------------
 
@@ -75,22 +79,31 @@ public class JobController {
     @PreAuthorize("hasAnyAuthority('ROLE_EMPLOYER','ROLE_ADMIN')")
     public ResponseEntity<?> deleteJob(@PathVariable String jobId, Principal principal) {
         User current = userService.getUserByEmail(principal.getName());
-        if (!isOwnerOrAdmin(current, jobId)) {
-            throw new AccessDeniedException("You are not allowed to delete this job");
-        }
+        JobDto job = jobService.getJobById(jobId);
+
+        boolean isAdmin = current.getRoles().stream()
+                .anyMatch(r -> r.getName().toString().equalsIgnoreCase("ROLE_ADMIN"));
+        boolean isOwner = job.getPostedBy().getId().equals(current.getId());
+
+        if (!isAdmin && !isOwner)
+            throw new AccessDeniedException("Not allowed to delete this job");
+
         jobService.deleteJob(jobId);
         return ResponseEntity.ok("Job deleted successfully");
     }
 
+
     // ---------------- Get / List ----------------
 
     @GetMapping("/{jobId}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_EMPLOYER','ROLE_CANDIDATE')")
     public ResponseEntity<JobDto> getJobById(@PathVariable String jobId) {
         JobDto job = jobService.getJobById(jobId);
         return ResponseEntity.ok(job);
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_EMPLOYER','ROLE_CANDIDATE')")
     public ResponseEntity<Page<JobDto>> getAllJobs(
             @RequestParam(value = "pageNumber", defaultValue = "0") Integer pageNumber,
             @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,
@@ -107,11 +120,13 @@ public class JobController {
         return ResponseEntity.ok(jobs);
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<List<JobDto>> searchJobs(@RequestParam("keyword") String keyword) {
+    @GetMapping("/search/{keyword}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_EMPLOYER','ROLE_CANDIDATE')")
+    public ResponseEntity<List<JobDto>> searchJobs(@PathVariable String keyword) {
         List<JobDto> results = jobService.searchJobs(keyword);
         return ResponseEntity.ok(results);
     }
+
 
     // ---------------- Patch: change active status ----------------
 

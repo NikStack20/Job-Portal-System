@@ -1,5 +1,5 @@
 package com.ncst.job.portal.service.impl;
-import java.util.*;
+import java.util.*; 
 import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +11,8 @@ import com.ncst.job.portal.entities.RoleName;
 import com.ncst.job.portal.entities.User;
 import com.ncst.job.portal.globalExceptionHandler.ResourceNotFoundException;
 import com.ncst.job.portal.loadouts.UserDto;
-import com.ncst.job.portal.Repository.RoleRepo;
-import com.ncst.job.portal.Repository.UserRepo;
+import com.ncst.job.portal.repository.RoleRepo;
+import com.ncst.job.portal.repository.UserRepo;
 import com.ncst.job.portal.service.UserService;
 
 @Service
