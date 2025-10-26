@@ -1,42 +1,29 @@
 package com.ncst.job.portal.loadouts;
-
+import lombok.*; 
 import java.util.HashSet;
 import java.util.Set;
-
-import com.ncst.job.portal.entities.Application;
-import com.ncst.job.portal.entities.Job;
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class UserDto {
-
     private String userId;
 
-    @NotEmpty(message = "username must not be empty !!")
+    @NotEmpty
     private String name;
-
-    @NotEmpty(message = "email must not be empty !!")
-    @Email(message = "enter a valid email address !!")
+    
+    @NotEmpty 
+    @Email
     private String email;
-
-    @NotEmpty(message = "password must not be empty !!")
+    
+    @NotEmpty
     private String password;
 
-    // ⚙️ Instead of Role entity — storing string role names for flexibility
+    // accept role names as strings like "ROLE_CANDIDATE"
     private Set<String> roleNames = new HashSet<>();
 
-    @NotEmpty(message = "contact must not be empty !!")
+    @NotEmpty
     private String contactNumber;
-
-    private Set<Application> applicationsByUser = new HashSet<>();
-
-    private Set<Job> jobsByUser = new HashSet<>();
 }
-

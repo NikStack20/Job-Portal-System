@@ -2,6 +2,7 @@ package com.ncst.job.portal.service.impl;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -47,40 +48,60 @@ public class UserServiceImpl implements UserService {
     // ---------------- DTO operations ----------------
     @Override
     public UserDto createUser(UserDto userDto) {
-        // checking unique email or not
+    	
+    	final org.slf4j.Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
+    	
+        // uniqueness check
         userRepo.findByEmail(userDto.getEmail()).ifPresent(u -> {
             throw new IllegalArgumentException("Email already in use: " + userDto.getEmail());
         });
 
-        // mapping DTO -> entity
+        // Map DTO -> entity
         User user = modelMapper.map(userDto, User.class);
-        
-        // set id here, if not present :>
+
+        // Ensure id
         if (user.getId() == null || user.getId().isBlank()) {
             user.setId(UUID.randomUUID().toString());
         }
 
-        // encoding password if present
-        if (user.getPassword() != null && !user.getPassword().isBlank()) {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        // Ensure username (map from DTO name explicitly)
+        if (userDto.getName() != null && !userDto.getName().isBlank()) {
+            user.setUsername(userDto.getName());
+        } else {
+            // fallback: use local-part of the email or whole email if name missing
+            String fallback = userDto.getEmail();
+            user.setUsername(fallback);
         }
 
-        // map roleNames (strings) to Role entities (enum-aware) DONE
+        // Encode password from DTO (don't rely on mapped password value if mapper misconfigured)
+        if (userDto.getPassword() != null && !userDto.getPassword().isBlank()) {
+            user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        } else {
+            throw new IllegalArgumentException("Password required");
+        }
+
+        // Map roles strings -> Role entities; default to ROLE_CANDIDATE
         if (userDto.getRoleNames() != null && !userDto.getRoleNames().isEmpty()) {
             Set<Role> roles = userDto.getRoleNames().stream()
                     .map(this::toRoleEntity)
                     .collect(Collectors.toSet());
             user.setRoles(roles);
         } else {
-            // default role (candidate :> ) if not provided
             Role defaultRole = roleRepo.findByName(RoleName.ROLE_CANDIDATE)
                     .orElseThrow(() -> new ResourceNotFoundException("Role", "name", RoleName.ROLE_CANDIDATE));
-            user.getRoles().add(defaultRole);
+            user.setRoles(new HashSet<>(Collections.singletonList(defaultRole)));
         }
+
+        // Defensive logging
+        log.info("Saving user: id={}, username={}, email={}, roles={}",
+                 user.getId(), user.getUsername(), user.getEmail(),
+                 user.getRoles().stream().map(r -> r.getName().toString()).collect(Collectors.toList()));
 
         User saved = userRepo.save(user);
         return mapToDto(saved);
     }
+
+
 
     @Override
     public UserDto updateUser(UserDto userDto, String userId) {
@@ -100,6 +121,7 @@ public class UserServiceImpl implements UserService {
         // ignoring roleNames here (only admin endpoint should change roles)
         // userDto.getRoleNames() is intentionally not applied  <_>
 
+        
         User updated = userRepo.save(existing);
         return mapToDto(updated);
     }
@@ -145,7 +167,6 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Empty role name");
         }
         String normalized = roleStr.trim().toUpperCase();
-        // allow both "ADMIN" or "ROLE_ADMIN"
         if (!normalized.startsWith("ROLE_")) {
             normalized = "ROLE_" + normalized;
         }
@@ -161,28 +182,33 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("Role", "name", rn));
     }
 
+
     
      // Mapping User entity to UserDto safely (by not exposing the password).
-     
     private UserDto mapToDto(User user) {
-        UserDto dto = modelMapper.map(user, UserDto.class);
+        UserDto dto = new UserDto();
 
-        // map roles -> roleNames (strings)
+        // basic fields
+        dto.setUserId(user.getId());
+        dto.setName(user.getUsername());   // explicit
+        dto.setEmail(user.getEmail());
+        dto.setContactNumber(user.getContactNumber());
+        dto.setPassword(null); // never expose
+
+        // roles -> roleNames strings
         if (user.getRoles() != null && !user.getRoles().isEmpty()) {
             Set<String> roleNames = user.getRoles().stream()
-                    .map(r -> r.getName().toString())
+                    .map(r -> r.getName().name())   // RoleName enum -> "ROLE_ADMIN"
                     .collect(Collectors.toSet());
             dto.setRoleNames(roleNames);
         } else {
             dto.setRoleNames(Collections.emptySet());
         }
 
-        //will never return password field
-        dto.setPassword(null);
-
-        // keeping applications/jobs as-is or you can map selectively if you want
+        // map jobs/applications if you want (or leave empty)
         return dto;
     }
+
 
 	
 }

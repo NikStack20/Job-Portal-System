@@ -1,6 +1,6 @@
 package com.ncst.job.portal.service;
 
-import java.security.Principal;
+import java.security.Principal; 
 import java.util.List;
 
 import com.ncst.job.portal.entities.User;

@@ -1,19 +1,15 @@
 package com.ncst.job.portal.controllers;
-
-import java.security.Principal;
+import java.security.Principal; 
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import jakarta.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
 import com.ncst.job.portal.entities.User;
 import com.ncst.job.portal.loadouts.UserDto;
 import com.ncst.job.portal.service.UserService;

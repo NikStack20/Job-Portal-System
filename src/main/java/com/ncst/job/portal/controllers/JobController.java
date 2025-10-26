@@ -1,7 +1,7 @@
 package com.ncst.job.portal.controllers;
-
-import java.security.Principal;
+import java.security.Principal; 
 import java.util.List;
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -10,13 +10,12 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
 import com.ncst.job.portal.loadouts.JobDto;
 import com.ncst.job.portal.service.JobService;
 import com.ncst.job.portal.service.UserService;
-
 import jakarta.validation.Valid;
-
+import com.ncst.job.portal.entities.Role;
+import com.ncst.job.portal.entities.RoleName;
 import com.ncst.job.portal.entities.User;
 
 @RestController
@@ -153,20 +152,21 @@ public class JobController {
      * Uses jobService.getJobById(...) which throws ResourceNotFoundException for invalid jobId.
      */
     private boolean isOwnerOrAdmin(User currentUser, String jobId) {
-        // admin check
-        if (currentUser.getRoles() != null) {
-            boolean admin = currentUser.getRoles().stream()
-                    .anyMatch(r -> "ROLE_ADMIN".equalsIgnoreCase(r.getRoleName())
-                                 || "ADMIN".equalsIgnoreCase(r.getRoleName()));
-            if (admin) return true;
-        }
+        if (currentUser == null) return false;
 
-        // owner check: fetch job and compare postedBy id
-        JobDto job = jobService.getJobById(jobId);
-        if (job.getPostedBy() != null && job.getPostedBy().getId() != null) {
-            return currentUser.getId().equals(job.getPostedBy().getId());
-        }
-        return false;
+        // admin check — compare enum, null-safe
+        boolean isAdmin = currentUser.getRoles() != null &&
+            currentUser.getRoles().stream()
+                .map(Role::getName)             // RoleName (enum) — NOT a String
+                .filter(Objects::nonNull)
+                .anyMatch(rn -> rn == RoleName.ROLE_ADMIN);
+
+        if (isAdmin) return true;
+
+        // owner check: fetch job and compare postedBy.id safely
+        JobDto job = jobService.getJobById(jobId); // <-- implement/adjust to return Job entity
+        if (job == null || job.getPostedBy() == null) return false;
+        return Objects.equals(job.getPostedBy().getId(), currentUser.getId());
     }
 }
 
