@@ -3,7 +3,11 @@
 A complete Spring Boot–based Job Portal System, designed to connect employers and applicants on one platform.
 The system allows employers to post jobs, and users to apply, upload resumes, and track application status — all secured using Spring Security + JWT.
 
-🚀 Features
+
+
+
+==🚀 Features==
+
 
 👤 User Roles – Candidate, Recruiter, and Admin
 
@@ -21,7 +25,11 @@ The system allows employers to post jobs, and users to apply, upload resumes, an
 
 🧾 Swagger API Docs – Auto-generated API documentation
 
-⚙️ Tech Stack
+
+
+
+==⚙️ Tech Stack==
+
 
 Backend: Java 17, Spring Boot 3, Spring Data JPA, Hibernate
 
@@ -37,7 +45,11 @@ IDE: Spring Tool Suite (STS)
 
 Version Control: Git & GitHub
 
-🧠 Project Structure
+
+
+==🧠 Project Structure==
+
+
 Job-Portal-System/
 │
 ├── src/main/java/com/ncst/job/portal/
@@ -57,7 +69,10 @@ Job-Portal-System/
 ├── README.md
 └── runlog.txt (for logs)
 
+
+
 ==🧾 API Endpoints Overview==
+
 
 
 🔐 Authentication
@@ -85,7 +100,11 @@ GET	/api/applications/job/{id}	View all applications for a job
 DELETE	/api/applications/{id}	Delete an application
 📂 File Uploads
 
-Resume Upload:
+
+
+==Resume Upload:==
+
+
 
 POST /api/jobs/upload-resume
 FormData → file: <choose file>
@@ -95,7 +114,13 @@ Resume Download:
 
 GET /api/jobs/resumes/{filename}
 
-⚡ How to Run Locally
+
+
+
+==⚡ How to Run Locally==
+
+
+
 
 Clone the Repository
 
@@ -133,7 +158,9 @@ Login → Get JWT token → Add it to headers as:
 
 Authorization: Bearer <token>
 
-🎥 Demo Folder
+
+
+==🎥 Demo Folder==
 
 You can find demo screenshots and short clips of project testing under:
 📁 /demo
@@ -147,6 +174,7 @@ Integrate frontend using React or Thymeleaf
 Add email notifications on job application updates
 
 Deploy on Docker + AWS for cloud access
+
 
 👨‍💻 Author
 
