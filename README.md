@@ -5,21 +5,21 @@ The system allows employers to post jobs, and users to apply, upload resumes, an
 
 🚀 Features
 
- User Roles – Candidate, Recruiter, and Admin
+👤 User Roles – Candidate, Recruiter, and Admin
 
- JWT Authentication – Secure login using token-based access
+🔐 JWT Authentication – Secure login using token-based access
 
- Job Management – Employers can create, update, and delete jobs
+📄 Job Management – Employers can create, update, and delete jobs
 
- Applications – Users can apply for jobs and upload resumes
+💼 Applications – Users can apply for jobs and upload resumes
 
- Search & Filter – Find jobs easily with keyword-based search
+🔎 Search & Filter – Find jobs easily with keyword-based search
 
- File Uploads – Resume file storage handled by Spring FileSystem
+🧰 File Uploads – Resume file storage handled by Spring FileSystem
 
- Admin Access – Manage users and roles efficiently
+🧑‍💻 Admin Access – Manage users and roles efficiently
 
- Swagger API Docs – Auto-generated API documentation
+🧾 Swagger API Docs – Auto-generated API documentation
 
 ⚙️ Tech Stack
 
@@ -58,23 +58,23 @@ Job-Portal-System/
 └── runlog.txt (for logs)
 
 🧾 API Endpoints Overview
- Authentication
+🔐 Authentication
 Method	Endpoint	Description
 POST	/api/auth/login	User login (returns JWT)
 POST	/api/users/register	Register new user
- User Management
+👤 User Management
 Method	Endpoint	Description
 GET	/api/users/me	Get current user details
 PATCH	/api/users/{id}/roles	Update user roles (Admin only)
 DELETE	/api/users/{id}	Delete a user
- Job Management
+💼 Job Management
 Method	Endpoint	Description
 POST	/api/jobs	Create a new job
 PUT	/api/jobs/{id}	Update existing job
 GET	/api/jobs/{id}	View job by ID
 GET	/api/jobs/search/{keyword}	Search jobs
 DELETE	/api/jobs/{id}	Delete job (Admin/Employer)
- Applications
+📄 Applications
 Method	Endpoint	Description
 POST	/api/applications	Apply for a job
 PUT	/api/applications/{id}	Update application status
@@ -149,7 +149,7 @@ Deploy on Docker + AWS for cloud access
 👨‍💻 Author
 
 Nikhil Chauhan
-🎓 B.Tech Student| CSE | Backend Developer
-📧 codingnik20@gmail.com
+🎓 B.Tech Student | Backend Developer
+📧 chauhannikil20062005@gmail.com
 
 🔗 GitHub – NikStack20
