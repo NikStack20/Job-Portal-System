@@ -1,12 +1,10 @@
 package com.ncst.job.portal.loadouts;
-
-import lombok.AllArgsConstructor;
+import lombok.AllArgsConstructor; 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-// package com.ncst.job.portal.auth;
 import jakarta.validation.constraints.NotBlank;
 
+//package com.ncst.job.portal.auth;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

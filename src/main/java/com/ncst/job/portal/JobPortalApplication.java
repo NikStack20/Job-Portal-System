@@ -1,11 +1,10 @@
 package com.ncst.job.portal;
-import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.CommandLineRunner; 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-
 import com.ncst.job.portal.entities.Role;
 import com.ncst.job.portal.entities.RoleName;
 import com.ncst.job.portal.repository.RoleRepo;

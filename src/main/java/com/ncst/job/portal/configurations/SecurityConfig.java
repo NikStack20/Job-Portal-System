@@ -1,9 +1,9 @@
 package com.ncst.job.portal.configurations;
-import org.springframework.context.annotation.Bean; 
+import org.springframework.context.annotation.Bean;  
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -21,63 +21,56 @@ import com.ncst.job.portal.service.CustomUserDetailsService;
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
-    private final JwtAuthenticationEntryPoint jwtAuthEntryPoint;
+    private final JwtAuthenticationEntryPoint entryPoint;
+    private final CustomUserDetailsService uds;
 
-    public SecurityConfig(JwtAuthFilter jwtAuthFilter,
-                          JwtAuthenticationEntryPoint jwtAuthEntryPoint) {
-        this.jwtAuthFilter = jwtAuthFilter;
-        this.jwtAuthEntryPoint = jwtAuthEntryPoint;
+    public SecurityConfig(CustomUserDetailsService uds, JwtAuthFilter f, JwtAuthenticationEntryPoint e) {
+        this.uds = uds;
+        this.jwtAuthFilter = f;
+        this.entryPoint = e;
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    // Use AuthenticationConfiguration to expose AuthenticationManager
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration cfg) throws Exception {
+        return cfg.getAuthenticationManager();
     }
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
-            .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthEntryPoint))
+            .exceptionHandling(e -> e.authenticationEntryPoint(entryPoint))
+            .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                // OpenAPI / swagger (allow GET and subpaths)
-                .requestMatchers(HttpMethod.GET, "/v3/api-docs", "/v3/api-docs/**").permitAll()
-                .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/swagger-ui/index.html", "/webjars/**").permitAll()
-
-                // Auth endpoints
+                // public auth and register
                 .requestMatchers("/api/auth/**", "/api/users/register").permitAll()
-
-                // Public job listings (GET)
-                .requestMatchers(HttpMethod.GET, "/api/jobs/**").permitAll()
-
-                // Preflight
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-
-                // everything else under /api/** requires authentication
+                // swagger / docs
+                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                // file download for resumes maybe require auth (change as needed)
+                .requestMatchers("/files/**").permitAll() // adjust: allow or secure
+                // allow upload-resume only to authenticated users
+                .requestMatchers(HttpMethod.POST, "/api/jobs/upload-resume").authenticated()
+                // all API endpoints require auth unless specifically permitted
                 .requestMatchers("/api/**").authenticated()
-
-                // any other app routes (e.g. thymeleaf UI) can be permitted or restricted as needed:
+                // app UI and static can remain permitted
                 .anyRequest().permitAll()
             )
+            // Add JWT filter BEFORE UsernamePasswordAuthenticationFilter
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
             .httpBasic(b -> b.disable())
             .formLogin(f -> f.disable());
 
         return http.build();
     }
-
-    @Bean
-     PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
- // inside a @Configuration class (can be your SecurityConfig)
-    @Bean
-     AuthenticationManager authenticationManager(HttpSecurity http,
-                                                       PasswordEncoder passwordEncoder,
-                                                       CustomUserDetailsService uds) throws Exception {
-        AuthenticationManagerBuilder amb = http.getSharedObject(AuthenticationManagerBuilder.class);
-        amb.userDetailsService(uds).passwordEncoder(passwordEncoder);
-        return amb.build();
-    }
-
-
-
 }
+
+
+
 
 

@@ -1,7 +1,5 @@
 package com.ncst.job.portal.configurations;
-
-import java.io.IOException;
-
+import java.io.IOException; 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.AuthenticationException;

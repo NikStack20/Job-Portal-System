@@ -7,8 +7,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
 
 @Component
@@ -21,8 +21,23 @@ public class JwtTokenHelper {
     private long jwtExpirationMs;
 
     private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
+        if (jwtSecret != null && !jwtSecret.isBlank()) {
+            try {
+                byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
+                if (keyBytes.length >= 64) {
+                    return Keys.hmacShaKeyFor(keyBytes);
+                } 
+                // fallthrough to generate
+            } catch (Exception ignored) {}
+        }
+        // generate ephemeral key for dev only
+        Key k = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+        // WARNING: ephemeral key -> tokens will stop working after restart
+        System.err.println("WARNING: No valid app.jwtSecret found — using generated ephemeral key (dev only). " +
+                           "Generate & set app.jwtSecret to persist tokens.");
+        return k;
     }
+
 
     public String generateToken(UserDetails userDetails) {
         Date now = new Date();
@@ -56,6 +71,8 @@ public class JwtTokenHelper {
         }
     }
 }
+
+
 
 
 

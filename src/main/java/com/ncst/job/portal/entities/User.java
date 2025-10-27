@@ -1,5 +1,5 @@
 package com.ncst.job.portal.entities;
-import jakarta.persistence.*; 
+import jakarta.persistence.*;  
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

@@ -1,9 +1,12 @@
 package com.ncst.job.portal.security;
-import java.io.IOException;
-import java.util.Arrays;
+import java.io.IOException; 
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -16,41 +19,31 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-    private static final Logger logger = LoggerFactory.getLogger(JwtAuthFilter.class);
+    private static final Logger log = LoggerFactory.getLogger(JwtAuthFilter.class);
 
-    private final List<String> skipPaths = Arrays.asList(
-            "/v3/api-docs",
-            "/v3/api-docs/**",
-            "/swagger-ui/**",
-            "/swagger-ui.html",
-            "/swagger-ui/index.html",
-            "/swagger-resources/**",
-            "/webjars/**",
-            "/api/auth/**",
-            "/api/users/register"
+    private final List<String> skipPatterns = List.of(
+        "/v3/api-docs", "/v3/api-docs/**",
+        "/swagger-ui/**", "/swagger-ui.html", "/swagger-ui/index.html",
+        "/api/auth/**", "/api/users/register", "/webjars/**", "/swagger-resources/**"
     );
 
-    private final AntPathMatcher pathMatcher = new AntPathMatcher();
+    private final AntPathMatcher matcher = new AntPathMatcher();
 
     private final CustomUserDetailsService userDetailsService;
     private final JwtTokenHelper jwtTokenHelper;
 
-    public JwtAuthFilter(CustomUserDetailsService userDetailsService,
-                         JwtTokenHelper jwtTokenHelper) {
+    public JwtAuthFilter(CustomUserDetailsService userDetailsService, JwtTokenHelper jwtTokenHelper) {
         this.userDetailsService = userDetailsService;
         this.jwtTokenHelper = jwtTokenHelper;
     }
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        // Use request.getRequestURI() since swagger UI may use servlet path + query etc.
-        String path = request.getRequestURI(); 
-        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
-            return true;
-        }
-        for (String pattern : skipPaths) {
-            if (pathMatcher.match(pattern, path)) {
-                logger.debug("shouldNotFilter MATCH: pattern='{}' path='{}' -> skipping filter", pattern, path);
+        String path = request.getRequestURI();
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) return true;
+        for (String pattern : skipPatterns) {
+            if (matcher.match(pattern, path)) {
+                log.debug("Skipping JWT filter for path: {}", path);
                 return true;
             }
         }
@@ -58,42 +51,37 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
 
-        logger.debug("JWT Filter running for path='{}' method='{}' authHeaderPresent={}",
-                request.getRequestURI(), request.getMethod(),
-                request.getHeader("Authorization") != null);
+        String path = request.getRequestURI();
+        String authHeader = request.getHeader("Authorization");
+        log.debug("JWTFilter running for path='{}' authHeaderPresent={}", path, authHeader != null);
 
-        // Safe token processing: catch parsing exceptions and do NOT send error responses here
         try {
-            String authHeader = request.getHeader("Authorization");
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                String token = authHeader.substring(7);
-                String username = jwtTokenHelper.getUsername(token);
-                if (username != null && org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication() == null) {
-                    var userDetails = (org.springframework.security.core.userdetails.UserDetails) userDetailsService.loadUserByUsername(username);
-                    if (jwtTokenHelper.validate(token, userDetails)) {
-                        var auth = new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
-                                userDetails, null, userDetails.getAuthorities());
-                        auth.setDetails(new org.springframework.security.web.authentication.WebAuthenticationDetailsSource().buildDetails(request));
-                        org.springframework.security.core.context.SecurityContextHolder.getContext().setAuthentication(auth);
-                        logger.debug("JWT Filter: authenticated user='{}'", username);
+                String token = authHeader.substring(7).trim();
+                String username = jwtTokenHelper.getUsername(token); // may throw if invalid
+                if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    UserDetails ud = userDetailsService.loadUserByUsername(username);
+                    if (jwtTokenHelper.validate(token, ud)) {
+                        UsernamePasswordAuthenticationToken auth =
+                            new UsernamePasswordAuthenticationToken(ud, null, ud.getAuthorities());
+                        auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        SecurityContextHolder.getContext().setAuthentication(auth);
+                        log.debug("Authenticated user '{}' via JWT", username);
                     } else {
-                        logger.debug("JWT Filter: token validation failed for user='{}'", username);
+                        log.debug("JWT validation failed for user '{}'", username);
                     }
                 }
-            } else {
-                logger.debug("JWT Filter: no bearer token");
             }
         } catch (Exception ex) {
-            // Log and continue — do not call response.sendError(...) here
-            logger.warn("JWT parse/validate exception (continuing unauthenticated): {}", ex.toString());
+            // Log full exception for debugging (do not send error here)
+            log.warn("JWT parse/validate exception (continuing unauthenticated): ", ex);
         }
 
-        filterChain.doFilter(request, response);
+        chain.doFilter(request, response);
     }
 }
+
 
