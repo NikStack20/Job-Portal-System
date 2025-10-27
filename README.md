@@ -57,7 +57,9 @@ Job-Portal-System/
 ├── README.md
 └── runlog.txt (for logs)
 
-🧾 API Endpoints Overview
+==🧾 API Endpoints Overview==
+
+
 🔐 Authentication
 Method	Endpoint	Description
 POST	/api/auth/login	User login (returns JWT)
