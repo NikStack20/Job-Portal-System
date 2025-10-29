@@ -1,5 +1,5 @@
 package com.ncst.job.portal.loadouts;
-import lombok.*; 
+import lombok.*;  
 import java.util.HashSet;
 import java.util.Set;
 import jakarta.validation.constraints.Email;

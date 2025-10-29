@@ -31,13 +31,13 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     // Use AuthenticationConfiguration to expose AuthenticationManager
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration cfg) throws Exception {
+     AuthenticationManager authenticationManager(AuthenticationConfiguration cfg) throws Exception {
         return cfg.getAuthenticationManager();
     }
 

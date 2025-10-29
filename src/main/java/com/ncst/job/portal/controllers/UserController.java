@@ -1,5 +1,5 @@
 package com.ncst.job.portal.controllers;
-import java.security.Principal; 
+import java.security.Principal;  
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;

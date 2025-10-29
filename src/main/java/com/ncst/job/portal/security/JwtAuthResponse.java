@@ -1,6 +1,6 @@
 package com.ncst.job.portal.security;
 
-import lombok.Data;
+import lombok.Data; 
 import lombok.NoArgsConstructor;
 
 @Data

@@ -1,5 +1,5 @@
 package com.ncst.job.portal.security;
-import java.util.Date;
+import java.util.Date;  
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -14,7 +14,7 @@ import java.security.Key;
 @Component
 public class JwtTokenHelper {
 
-    @Value("${app.jwtSecret:helloMyNameIsNCST}")
+    @Value("${app.jwtSecret}")
     private String jwtSecret;
 
     @Value("${app.jwtExpirationMs:86400000}")

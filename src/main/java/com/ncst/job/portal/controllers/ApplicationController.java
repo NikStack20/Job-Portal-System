@@ -1,5 +1,5 @@
 package com.ncst.job.portal.controllers;
-import java.security.Principal;
+import java.security.Principal; 
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

@@ -1,5 +1,5 @@
 package com.ncst.job.portal.controllers;
-import java.security.Principal;
+import java.security.Principal; 
 import java.util.Map;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
